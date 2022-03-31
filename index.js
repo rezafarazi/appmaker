@@ -10,6 +10,7 @@ const port=80;
 
 
 //Property Start
+app.use(express.static('assets'));
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
 app.use(bodyParser.urlencoded({
@@ -25,13 +26,6 @@ app.use(bodyParser.urlencoded({
 app.get('/',(req,res)=>{
     res.render('index',{
         admin_message:"Hello"
-    })
-});
-
-app.post('/submit_form',(req,res)=>{
-    res.render('sayhello',{
-        name:req.body.name,
-        family:req.body.family
     })
 });
 
