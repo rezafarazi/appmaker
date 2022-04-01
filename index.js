@@ -1,7 +1,5 @@
 //Libraries Start
 const express=require('express');
-const crypto=require('crypto');
-const hash=crypto.createHash("sha256");
 const path=require('path');
 const bodyParser = require("body-parser")
 const mongoClient=require('mongodb').MongoClient;
@@ -115,11 +113,28 @@ function GetMongoDB_Init()
 
 function Get_User_Check(username,password)
 {
+    var crypto=require('crypto');
+    var hash=crypto.createHash("sha256");
     ps=hash.update(password,"utf-8").digest('hex');
+    var resu=false;
+
     database.collection('users').findOne({username:username.toLowerCase(),password:ps},function(err,result){
-        console.log(result);
-        return true;
+
+        if(err)
+        { 
+            throw err;
+            return;
+        }
+
+        if(result!=null)
+        {
+            console.log(result);
+            resu=true;
+        }
     });
-    return false;
+
+    console.log(resu);
+
+    return resu;
 }
 //MongoDB End
