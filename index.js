@@ -1,11 +1,15 @@
 //Libraries Start
 const express=require('express');
+const crypto=require('crypto');
+const hash=crypto.createHash("sha256");
 const path=require('path');
 const bodyParser = require("body-parser")
 const mongoClient=require('mongodb').MongoClient;
 const mongodb_url="mongodb://127.0.0.1:27017/OAK";
 const app=express();
 const port=80;
+
+var database;
 //Libraries End
 
 
@@ -46,7 +50,7 @@ app.get('/Login',(req,res)=>{
 
 app.post('/Login',(req,res)=>{
 
-    if(false)
+    if(Get_User_Check(req.body.username,req.body.password))
     {
         res.redirect('/User/Dashboard');
     }
@@ -91,7 +95,7 @@ function GetMongoDB_Init()
             throw err;
         }
         console.log("Mongo Db Connected");
-        var database = db.db("OAK");
+        database = db.db("OAK");
         //Connetction End
 
         //Create Collection Start
@@ -99,18 +103,23 @@ function GetMongoDB_Init()
          
             if(err)
             {
-                console.log(err.message);
-                throw err;
             }
-            console.log("Mongo Db Collection is OK");
-
-            database.collection("users").insertOne({}, function(err, res){
-                
-            });
 
         });
+        console.log("Collection started");
         //Create Collection End
 
+
     });
+}
+
+function Get_User_Check(username,password)
+{
+    ps=hash.update(password,"utf-8").digest('hex');
+    database.collection('users').findOne({username:username.toLowerCase(),password:ps},function(err,result){
+        console.log(result);
+        return true;
+    });
+    return false;
 }
 //MongoDB End
