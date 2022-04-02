@@ -48,17 +48,36 @@ app.get('/Login',(req,res)=>{
 
 app.post('/Login',(req,res)=>{
 
-    if(Get_User_Check(req.body.username,req.body.password))
+    var status=Get_User_Check(req.body.username,req.body.password);
+    if(status)
     {
+        res.cookie("username",req.body.username);
+        res.cookie("password",req.body.password);
         res.redirect('/User/Dashboard');
     }
     else
     {
         res.redirect('/login');
     }
-
+    
 });
 //Login End
+
+
+
+
+
+
+//Dashbard Start
+
+app.get('/User/Dashboard',function(req,res){
+
+    res.end("salam");
+   
+});
+
+//Dashbard End
+
 
 
 
@@ -111,30 +130,18 @@ function GetMongoDB_Init()
     });
 }
 
-function Get_User_Check(username,password)
+async function Get_User_Check(username,password)
 {
     var crypto=require('crypto');
     var hash=crypto.createHash("sha256");
     ps=hash.update(password,"utf-8").digest('hex');
     var resu=false;
 
-    database.collection('users').findOne({username:username.toLowerCase(),password:ps},function(err,result){
-
-        if(err)
-        { 
-            throw err;
-            return;
-        }
-
-        if(result!=null)
-        {
-            console.log(result);
-            resu=true;
-        }
+    var data=await database.collection('users').findOne({username:username.toLowerCase(),password:ps}).then(function(result){
+        resu=true;
     });
 
     console.log(resu);
-
     return resu;
 }
 //MongoDB End
