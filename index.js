@@ -48,17 +48,21 @@ app.get('/Login',(req,res)=>{
 
 app.post('/Login',(req,res)=>{
 
-    var status=Get_User_Check(req.body.username,req.body.password);
-    if(status)
-    {
-        res.cookie("username",req.body.username);
-        res.cookie("password",req.body.password);
-        res.redirect('/User/Dashboard');
-    }
-    else
-    {
-        res.redirect('/login');
-    }
+    var Get_Check=async ()=>{
+        var status=await Get_User_Check(req.body.username,req.body.password);
+        if(status)
+        {
+            res.cookie("username",req.body.username);
+            res.cookie("password",req.body.password);
+            res.redirect('/User/Dashboard');
+        }
+        else
+        {
+            res.redirect('/login');
+        }
+    };
+
+    Get_Check();
     
 });
 //Login End
@@ -138,7 +142,10 @@ async function Get_User_Check(username,password)
     var resu=false;
 
     var data=await database.collection('users').findOne({username:username.toLowerCase(),password:ps}).then(function(result){
-        resu=true;
+        if(result!=null)
+        {
+            resu=true;
+        }
     });
 
     console.log(resu);
