@@ -1,7 +1,8 @@
 //Libraries Start
 const express=require('express');
 const path=require('path');
-const bodyParser = require("body-parser")
+const bodyParser = require("body-parser");
+const cookieParser = require('cookie-parser');
 const mongoClient=require('mongodb').MongoClient;
 const mongodb_url="mongodb://127.0.0.1:27017/OAK";
 const app=express();
@@ -21,6 +22,7 @@ app.use('/vendor', express.static(path.join(__dirname, 'vendor')));
 app.use(bodyParser.urlencoded({
     extended:true
 }));
+app.use(cookieParser());
 //Property End
 
 
@@ -42,7 +44,14 @@ app.get('/',(req,res)=>{
 //Login Start
 app.get('/Login',(req,res)=>{
 
-    res.render('login',{});
+    if(req.cookies.username!=null && req.cookies.password!=null)
+    {
+        res.redirect("/User/Dashboard");
+    }
+    else
+    {
+        res.render('login',{});
+    }
 
 });
 
